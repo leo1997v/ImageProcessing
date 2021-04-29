@@ -4,23 +4,34 @@ import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.ArrayList;
 
 public class ImageProcessing extends JFrame {
+    JButton btnSelect;
+
     JButton btnOrigin;
     JButton btnSketch;
     JButton btnOilPainting;
     JButton btnBlackWhite;
     JButton btnOld;
     JButton btnComic;
-    JButton btnSelect;
-    JButton btnQRCode;
     JButton btnMosaic;
-    JButton btnBack;
-    JButton btnEnlarge;
-    JButton btnShrink;
     JButton btnBinarization;
 
+    JButton btnResize;
+    JButton btnBack;
+
+    JButton btnSharpen;
+    JButton btnEmboss;
+
+
+    ArrayList<BufferedImage> arrBuffImg = new ArrayList<>();
+
     JTextField str;
+    JTextField inputRate;
+
+    JButton btnQRCode;
+
     double rate;
 
 
@@ -31,22 +42,24 @@ public class ImageProcessing extends JFrame {
     ImageProcessing(String path) {
         this.path = path;
         this.rate = 1;
-        listen.type = Params.TYPE_ORIGIN;
         btnSketch = new JButton("素描");
         btnOilPainting = new JButton("油画");
         btnBlackWhite = new JButton("黑白");
         btnOld = new JButton("老照片");
-        btnComic = new JButton("非主流");
+        btnComic = new JButton("阴冷");
         btnOrigin = new JButton("原图");
         btnSelect = new JButton("选择图片");
         btnQRCode = new JButton("生成二维码");
         btnMosaic = new JButton("马赛克");
         btnBack = new JButton("回退");
-        btnEnlarge = new JButton("放大");
-        btnShrink = new JButton("缩小");
+        btnResize = new JButton("调整大小");
+        inputRate = new JTextField("缩放倍率");
+
         btnBinarization = new JButton("板印");
+        btnSharpen = new JButton("锐化");
+        btnEmboss = new JButton("浮雕");
         str = new JTextField(25);
-        str.setText("霏霏真好看");
+        str.setText("");
 
 
         listen.imgP = this;
@@ -61,13 +74,14 @@ public class ImageProcessing extends JFrame {
         btnMosaic.addActionListener(listen);
         btnQRCode.addActionListener(listen);
         btnBack.addActionListener(listen);
-        btnEnlarge.addActionListener(listen);
-        btnShrink.addActionListener(listen);
+        btnResize.addActionListener(listen);
         btnBinarization.addActionListener(listen);
+        btnSharpen.addActionListener(listen);
+        btnEmboss.addActionListener(listen);
 
 
         setTitle("图像处理");
-        setSize(1000, 800);
+        setSize(1920, 1080);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new FlowLayout());
         add(btnSelect);
@@ -81,14 +95,17 @@ public class ImageProcessing extends JFrame {
         add(btnBinarization);
         add(btnQRCode);
         add(str);
-        add(btnEnlarge);
-        add(btnShrink);
+        add(btnSharpen);
+        add(btnEmboss);
+        add(inputRate);
+        add(btnResize);
         add(btnBack);
+        arrBuffImg.add(getPix(path));
         setVisible(true);
     }
 
 
-    public int[][] getPix(String path) {
+    public BufferedImage getPix(String path) {
         File file = new File(path);
         BufferedImage buffimg = null;
 
@@ -98,58 +115,26 @@ public class ImageProcessing extends JFrame {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        int[][] imgdata = new int[buffimg.getWidth()][buffimg.getHeight()];
-//		alt+/   enter
-        for (int i = 0; i < imgdata.length; i++) {
-            for (int j = 0; j < imgdata[i].length; j++) {
-
-                imgdata[i][j] = buffimg.getRGB(i, j);
-            }
-        }
-        return imgdata;
+        return buffimg;
     }
 
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        int[][] imgdata = getPix(path);
-//        System.out.println(rate);
 
-        switch (listen.arrType.get(listen.arrType.size() - 1)) {
-            case Params.TYPE_ORIGIN:
-                Process.paintOrigin(imgdata, g,rate);
-                break;
-            case Params.TYPE_SKETCH:
-                Process.paintSketch(imgdata, g,rate);
-                break;
-            case Params.TYPE_BLACK_WHITE:
-                Process.paintBlackWhite(imgdata, g,rate);
-                break;
-            case Params.TYPE_OIL_PAINTING:
-                Process.paintOilPainting(imgdata, g,rate);
-                break;
-            case Params.TYPE_OLD:
-                Process.paintOld(imgdata, g,rate);
-                break;
-            case Params.TYPE_COMIC:
-                Process.paintComic(imgdata, g,rate);
-                break;
-            case Params.TYPE_MOSAIC:
-                Process.paintMosaic(imgdata, g,rate);
-                break;
-            case Params.TYPE_QRCODE:
-                Process.paintQRCode(g, str.getText());
-                break;
-            case Params.TYPE_BINARIZATION:
-                Process.paintBinarization(imgdata, g,rate);
-                break;
-        }
+        draw(arrBuffImg.get(arrBuffImg.size()-1),g);
 
     }
 
 
+
+    public void draw(BufferedImage buffimg,Graphics g){
+        g.drawImage(buffimg, 100, 100, null);
+    }
+
+
     public static void main(String args[]) {
-        new ImageProcessing("./src/ufeii.jpg");
+        new ImageProcessing("./src/ufei.png");
     }
 
 }

@@ -2,9 +2,27 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 
+/**
+ * 图像滤镜处理的方法
+ */
 public class Process {
+    /**
+     * @param buffimg
+     * @return buffimg的RGB矩阵
+     */
+    public static int[][] getMatrix(BufferedImage buffimg){
+        int[][] imgdata = new int[buffimg.getWidth()][buffimg.getHeight()];
+//		alt+/   enter
+        for (int i = 0; i < imgdata.length; i++) {
+            for (int j = 0; j < imgdata[i].length; j++) {
 
-    public static void paintOrigin(int[][] imgdata, Graphics g, double rate) {
+                imgdata[i][j] = buffimg.getRGB(i, j);
+            }
+        }
+        return imgdata;
+    }
+
+    /*public static void paintOrigin(int[][] imgdata, Graphics g, double rate) {
         BufferedImage buffimg = new BufferedImage(imgdata.length, imgdata[0].length, BufferedImage.TYPE_INT_ARGB);
         Graphics buffg = buffimg.getGraphics();
 
@@ -17,12 +35,17 @@ public class Process {
             }
         }
         g.drawImage(buffimg, 100, 100, (int)(imgdata.length*rate),(int)(imgdata[0].length*rate),null);
-    }
+    }*/
 
-    public static void paintSketch(int[][] imgdata, Graphics g,double rate) {
+    /**
+     * 原理：先转成灰度图，取当前像素的下一个像素，当当前像素与下一像素灰度值差超过某一阈值才将当前像素涂黑
+     * @param originImg
+     * @return 素描处理完成后的图像buffimg
+     */
+    public static BufferedImage paintSketch(BufferedImage originImg) {
+        int[][] imgdata = getMatrix(originImg);
         BufferedImage buffimg = new BufferedImage(imgdata.length, imgdata[0].length, BufferedImage.TYPE_INT_ARGB);
         Graphics buffg = buffimg.getGraphics();
-
         for (int i = 1; i < imgdata.length - 1; i++) {
             for (int j = 0; j < imgdata[i].length - 1; j++) {
                 int rgb = imgdata[i][j];
@@ -45,10 +68,15 @@ public class Process {
                 buffg.fillRect( i,  j, 1, 1);
             }
         }
-        g.drawImage(buffimg, 100, 100,(int)(imgdata.length*rate),(int)(imgdata[0].length*rate), null);
+        return buffimg;
     }
-
-    public static void paintBlackWhite(int[][] imgdata, Graphics g,double rate) {
+    /**
+     * 原理：转为灰度图
+     * @param originImg
+     * @return 黑白处理完成后的图像buffimg
+     */
+    public static BufferedImage paintBlackWhite(BufferedImage originImg) {
+        int[][] imgdata = getMatrix(originImg);
         BufferedImage buffimg = new BufferedImage(imgdata.length, imgdata[0].length, BufferedImage.TYPE_INT_ARGB);
         Graphics buffg = buffimg.getGraphics();
         for (int i = 0; i < imgdata.length; i++) {
@@ -63,10 +91,16 @@ public class Process {
                 buffg.fillRect( i,  j, 1, 1);
             }
         }
-        g.drawImage(buffimg, 100, 100, (int)(imgdata.length*rate),(int)(imgdata[0].length*rate),null);
+        return buffimg;
     }
 
-    public static void paintBinarization(int[][] imgdata, Graphics g,double rate) {
+    /**
+     * 原理：二值化，取当前像素的灰度，当灰度超过某一阈值才涂黑
+     * @param originImg
+     * @return 板印处理完成后的图像buffimg
+     */
+    public static BufferedImage paintBinarization(BufferedImage originImg) {
+        int[][] imgdata = getMatrix(originImg);
         BufferedImage buffimg = new BufferedImage(imgdata.length, imgdata[0].length, BufferedImage.TYPE_INT_ARGB);
         Graphics buffg = buffimg.getGraphics();
         for (int i = 0; i < imgdata.length; i++) {
@@ -84,10 +118,16 @@ public class Process {
                 buffg.fillRect( i,  j, 1, 1);
             }
         }
-        g.drawImage(buffimg, 100, 100, (int)(imgdata.length*rate),(int)(imgdata[0].length*rate),null);
+        return buffimg;
     }
 
-    public static void paintOilPainting(int[][] imgdata, Graphics g,double rate) {
+    /**
+     * 原理：将填充像素点改为填充大小随机的圆
+     * @param originImg
+     * @return 油画处理完成后的图像buffimg
+     */
+    public static BufferedImage paintOilPainting(BufferedImage originImg) {
+        int[][] imgdata = getMatrix(originImg);
         BufferedImage buffimg = new BufferedImage(imgdata.length, imgdata[0].length, BufferedImage.TYPE_INT_ARGB);
         Graphics buffg = buffimg.getGraphics();
         Random rd = new Random();
@@ -99,14 +139,21 @@ public class Process {
                 buffg.fillOval(i, j, rd.nextInt(3) + 5, rd.nextInt(3) + 5);
             }
         }
-        g.drawImage(buffimg, 100, 100, (int)(imgdata.length*rate),(int)(imgdata[0].length*rate),null);
+        return buffimg;
     }
 
-    //var newR = (0.393 * r + 0.769 * g + 0.189 * b);
-    //var newG = (0.349 * r + 0.686 * g + 0.168 * b);
-    //var newB = (0.272 * r + 0.534 * g + 0.131 * b);
 
-    public static void paintOld(int[][] imgdata, Graphics g,double rate) {
+
+    /**
+     * 原理：处理公式如下
+     *  var newR = (0.393 * r + 0.769 * g + 0.189 * b);
+     *  var newG = (0.349 * r + 0.686 * g + 0.168 * b);
+     *  var newB = (0.272 * r + 0.534 * g + 0.131 * b);
+     * @param originImg
+     * @return 老照片处理完成后的图像buffimg
+     */
+    public static BufferedImage paintOld(BufferedImage originImg) {
+        int[][] imgdata = getMatrix(originImg);
         BufferedImage buffimg = new BufferedImage(imgdata.length, imgdata[0].length, BufferedImage.TYPE_INT_ARGB);
         Graphics buffg = buffimg.getGraphics();
         for (int i = 0; i < imgdata.length; i++) {
@@ -142,15 +189,19 @@ public class Process {
                 buffg.fillRect(i, j, 1, 1);
             }
         }
-        g.drawImage(buffimg, 100, 100, (int)(imgdata.length*rate),(int)(imgdata[0].length*rate),null);
+        return buffimg;
     }
 
-
-    //var newR = Math.abs(g - b + g + r) * r / 256;
-    //var newG = Math.abs(b -g + b + r) * r / 256;
-    //var newB =  Math.abs(b -g + b + r) * g / 256;
-
-    public static void paintComic(int[][] imgdata, Graphics g,double rate) {
+    /**
+     * 原理：处理公式如下
+     *  var newR = Math.abs(g - b + g + r) * r / 256;
+     *  var newG = Math.abs(b -g + b + r) * r / 256;
+     *  var newB =  Math.abs(b -g + b + r) * g / 256;
+     * @param originImg
+     * @return 非主流处理完成后的图像buffimg
+     */
+    public static BufferedImage paintComic(BufferedImage originImg) {
+        int[][] imgdata= getMatrix(originImg);
         BufferedImage buffimg = new BufferedImage(imgdata.length, imgdata[0].length, BufferedImage.TYPE_INT_ARGB);
         Graphics buffg = buffimg.getGraphics();
         for (int i = 0; i < imgdata.length; i++) {
@@ -186,10 +237,15 @@ public class Process {
                 buffg.fillRect( i,  j, 1, 1);
             }
         }
-        g.drawImage(buffimg, 100, 100, (int)(imgdata.length*rate),(int)(imgdata[0].length*rate),null);
+        return buffimg;
     }
-
-    public static void paintMosaic(int[][] imgdata, Graphics g,double rate) {
+    /**
+     * 原理：将填充像素点改为填充大小为10*10的区域
+     * @param originImg
+     * @return 马赛克处理完成后的图像buffimg
+     */
+    public static BufferedImage paintMosaic(BufferedImage originImg) {
+        int[][] imgdata = getMatrix(originImg);
         BufferedImage buffimg = new BufferedImage(imgdata.length, imgdata[0].length, BufferedImage.TYPE_INT_ARGB);
         Graphics buffg = buffimg.getGraphics();
 
@@ -201,11 +257,19 @@ public class Process {
                 buffg.fillRect( i,  j, 10, 10);
             }
         }
-        g.drawImage(buffimg, 100, 100, (int)(imgdata.length*rate),(int)(imgdata[0].length*rate),null);
+        return buffimg;
     }
-
-    public static void paintQRCode( Graphics g,String str) {
+    /**
+     * 原理：将str转化成一个矩阵再绘出
+     * @param  str 要转化成二维码的字符串
+     * @return 马赛克处理完成后的图像 buffimg
+     */
+    public static BufferedImage paintQRCode( String str) {
         boolean[][] binaryNum = StringBinary.StringToBinary(str);
+
+        BufferedImage buffimg = new BufferedImage(binaryNum[0].length*20, binaryNum.length*20, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = buffimg.getGraphics();
+
         for (int i = 0; i < binaryNum.length; i++) {
             for (int j = 0; j < 16; j++) {
                 if(binaryNum[i][j]==false) {
@@ -213,8 +277,9 @@ public class Process {
                 }else {
                     g.setColor(Color.BLACK);
                 }
-                g.fillRect(j*20+100,i*20+100, 20, 20);
+                g.fillRect(j*20,i*20, 20, 20);
             }
         }
+        return buffimg;
     }
 }

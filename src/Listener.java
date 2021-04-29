@@ -4,6 +4,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.regex.*;
 
 public class Listener implements ActionListener {
 
@@ -55,8 +56,12 @@ public class Listener implements ActionListener {
                 imgP.repaint();
                 break;
             case "生成二维码":
-                imgP.arrBuffImg.add(Process.paintQRCode(imgP.str.getText()));
-                imgP.repaint();
+                if(imgP.str.getText().length()==0){
+                    JOptionPane.showMessageDialog(null,"输入为空");
+                }else{
+                    imgP.arrBuffImg.add(Process.paintQRCode(imgP.str.getText()));
+                    imgP.repaint();
+                }
                 break;
             case "锐化":
                 imgP.arrBuffImg.add(Convolution.sharpen(imgP.arrBuffImg.get(imgP.arrBuffImg.size()-1)));
@@ -88,9 +93,16 @@ public class Listener implements ActionListener {
                 }
                 break;
             case "调整大小":
-                imgP.rate = Double.parseDouble(imgP.inputRate.getText());
-                imgP.arrBuffImg.add(BilinearInterpolation.resize(imgP.arrBuffImg.get(imgP.arrBuffImg.size()-1),imgP.rate));
-                imgP.repaint();
+                //正则表达式，仅匹配数字，可带小数点
+                String pattern ="^\\d+(\\.\\d+)?";
+                boolean isMatch = Pattern.matches(pattern, imgP.inputRate.getText());
+                if (isMatch){
+                    imgP.rate = Double.parseDouble(imgP.inputRate.getText());
+                    imgP.arrBuffImg.add(BilinearInterpolation.resize(imgP.arrBuffImg.get(imgP.arrBuffImg.size()-1),imgP.rate));
+                    imgP.repaint();
+                }else{
+                    JOptionPane.showMessageDialog(null,"请输入一个数字");
+                }
                 break;
 
         }

@@ -1,5 +1,11 @@
 public class StringBinary {
 
+
+    /**
+     * 将每个字符取出并补码填入一个boolean[][]矩阵，每行表示一个字符
+     * @param str 要转换的字符串
+     * @return 二维矩阵，每行表示一个字符
+     */
     public static boolean[][] StringToBinary(String str){
         boolean[][] binaruNum = new boolean[str.length()][16];
         char[] chars = new char[str.length()];
